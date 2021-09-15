@@ -6,7 +6,7 @@ namespace node {
 ToF::ToF(const std::shared_ptr<PipelineImpl>& par, int64_t nodeId)
     : Node(par, nodeId) {
     inputs = { &inputImage};
-    outputs = {&out, &amp_out, &err_out};
+    outputs = {&out, &amp_out, &err_out, &pc_out, &rgb_pc_out};
 }
 
   std::shared_ptr<Node> ToF::clone() {

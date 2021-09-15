@@ -23,13 +23,16 @@ class ToF : public Node {
     ToF(const std::shared_ptr<PipelineImpl>& par, int64_t nodeId);
 
   Input inputImage{*this, "inputImage", Input::Type::SReceiver, true, 8, {{DatatypeEnum::ImgFrame, true}}};
+  Input rgbImage{*this, "rgbImage", Input::Type::SReceiver, true, 8, {{DatatypeEnum::ImgFrame, true}}};  
 
     /**
      * Outputs ImgFrame message that carries modified image.
      */
     Output out{*this, "out", Output::Type::MSender, {{DatatypeEnum::ImgFrame, true}}};
     Output amp_out{*this, "amplitude", Output::Type::MSender, {{DatatypeEnum::ImgFrame, true}}};
-    Output err_out{*this, "error", Output::Type::MSender, {{DatatypeEnum::ImgFrame, true}}};  
+    Output err_out{*this, "error", Output::Type::MSender, {{DatatypeEnum::ImgFrame, true}}};
+  Output pc_out{*this, "pointcloud", Output::Type::MSender, {{DatatypeEnum::Buffer, true}}};
+  Output rgb_pc_out{*this, "rgb_pointcloud", Output::Type::MSender, {{DatatypeEnum::Buffer, true}}};      
 };
 
 }  // namespace node
