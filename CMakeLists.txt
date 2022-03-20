@@ -6,19 +6,24 @@ if(NOT WIN32)
     set(HUNTER_CONFIGURATION_TYPES "Release" CACHE STRING "Hunter dependencies list of build configurations")
 endif()
 
-# Read the BUILD_SHARED_LIBS option and select PIC toolchain
-if(BUILD_SHARED_LIBS)
-    if(NOT DEFINED CMAKE_TOOLCHAIN_FILE)
-        set(CMAKE_TOOLCHAIN_FILE "${CMAKE_CURRENT_LIST_DIR}/cmake/toolchain/pic.cmake" CACHE STRING "")
-    endif()
-    # Specify exporting all symbols on Windows
-    set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON CACHE BOOL "")
+# Create a custom toolchain to pass certain options to dependencies
+set(gen_toolchain "${CMAKE_CURRENT_BINARY_DIR}/generated/toolchain.cmake")
+configure_file(
+    "${CMAKE_CURRENT_LIST_DIR}/cmake/toolchain/custom.cmake.in"
+    "${gen_toolchain}"
+    @ONLY
+)
+set(CMAKE_TOOLCHAIN_FILE "${gen_toolchain}" CACHE STRING "" FORCE)
+if(DEFINED _INTERNAL_DEPTHAI_ORIGINAL_CMAKE_TOOLCHAIN_FILE)
+    message(STATUS "Using specified toolchain file: ${_INTERNAL_DEPTHAI_ORIGINAL_CMAKE_TOOLCHAIN_FILE} combined into: ${CMAKE_TOOLCHAIN_FILE}")
+else()
+    message(STATUS "Using toolchain file: ${CMAKE_TOOLCHAIN_FILE}")
 endif()
 
 include("cmake/HunterGate.cmake")
 HunterGate(
-    URL "https://github.com/cpp-pm/hunter/archive/v0.23.258.tar.gz"
-    SHA1 "062a19ab13ce8dffa9a882b6ce3e43bdabdf75d3"
+    URL "https://github.com/cpp-pm/hunter/archive/v0.23.320.tar.gz"
+    SHA1 "9b4e732afd22f40482c11ad6342f7d336634226f"
     LOCAL # Local config for dependencies
 )
 
@@ -28,7 +33,7 @@ if(WIN32)
 endif()
 
 # Create depthai project
-project(depthai VERSION "2.13.3" LANGUAGES CXX C)
+project(depthai VERSION "2.15.1" LANGUAGES CXX C)
 get_directory_property(has_parent PARENT_DIRECTORY)
 if(has_parent)
     set(DEPTHAI_VERSION ${PROJECT_VERSION} PARENT_SCOPE)
@@ -97,6 +102,11 @@ if(FORCE_COLORED_OUTPUT)
     elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
        add_compile_options(-fcolor-diagnostics)
     endif()
+endif()
+
+# Specify exporting all symbols on Windows
+if(WIN32 AND BUILD_SHARED_LIBS)
+    set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON CACHE BOOL "")
 endif()
 
 ### Constants
@@ -175,13 +185,13 @@ add_library(${TARGET_CORE_NAME}
     src/pipeline/node/StereoDepth.cpp
     src/pipeline/node/NeuralNetwork.cpp
     src/pipeline/node/ImageManip.cpp
-    src/pipeline/node/MyProducer.cpp
     src/pipeline/node/VideoEncoder.cpp
     src/pipeline/node/DetectionNetwork.cpp
     src/pipeline/node/Script.cpp
     src/pipeline/node/SpatialDetectionNetwork.cpp
     src/pipeline/node/SystemLogger.cpp
     src/pipeline/node/SpatialLocationCalculator.cpp
+    src/pipeline/node/AprilTag.cpp
     src/pipeline/node/ObjectTracker.cpp
     src/pipeline/node/IMU.cpp
     src/pipeline/node/EdgeDetector.cpp
@@ -198,6 +208,8 @@ add_library(${TARGET_CORE_NAME}
     src/pipeline/datatype/StreamMessageParser.cpp
     src/pipeline/datatype/SpatialLocationCalculatorData.cpp
     src/pipeline/datatype/SpatialLocationCalculatorConfig.cpp
+    src/pipeline/datatype/AprilTags.cpp
+    src/pipeline/datatype/AprilTagConfig.cpp
     src/pipeline/datatype/Tracklets.cpp
     src/pipeline/datatype/IMUData.cpp
     src/pipeline/datatype/StereoDepthConfig.cpp
@@ -207,6 +219,7 @@ add_library(${TARGET_CORE_NAME}
     src/utility/Initialization.cpp
     src/utility/Resources.cpp
     src/utility/Platform.cpp
+    src/utility/Environment.cpp
     src/xlink/XLinkConnection.cpp
     src/xlink/XLinkStream.cpp
     src/openvino/OpenVINO.cpp
@@ -386,6 +399,7 @@ target_link_libraries(${TARGET_CORE_NAME}
     PUBLIC
         nlohmann_json::nlohmann_json
         XLink
+        libnop
     PRIVATE
         Threads::Threads
         BZip2::bz2
@@ -479,7 +493,13 @@ if(DEPTHAI_SANITIZE)
     set(SANITIZE_ADDRESS ON CACHE BOOL "Enable AddressSanitizer for sanitized targets." FORCE)
     set(SANITIZE_UNDEFINED ON CACHE BOOL "Enable UndefinedBehaviorSanitizer for sanitized targets." FORCE)
     find_package(Sanitizers)
-    add_sanitizers(${TARGET_CORE_NAME} ${TARGET_OPENCV_NAME})
+    add_sanitizers(${TARGET_CORE_NAME})
+    if(DEPTHAI_HAVE_OPENCV_SUPPORT)
+        add_sanitizers(${TARGET_OPENCV_NAME})
+    endif()
+    if(DEPTHAI_XLINK_LOCAL)
+        add_sanitizers(XLink)
+    endif()
 endif()
 
 ########################
