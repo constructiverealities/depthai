@@ -4,6 +4,7 @@
 
 // shared
 #include <depthai-shared/properties/ToFProperties.hpp>
+#include "depthai/pipeline/datatype/ToFConfig.hpp"
 
 namespace dai {
 namespace node {
@@ -15,6 +16,8 @@ class ToF : public NodeCRTP<Node, ToF, ToFProperties> {
    public:
     constexpr static const char* NAME = "ToF";
 
+  ToFConfig initialConfig;
+  Input inputConfig{*this, "inputConfig", Input::Type::SReceiver, false, 4, {{DatatypeEnum::ToFConfig, false}}};
     /**
      * Constructs ToF node.
      */
