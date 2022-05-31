@@ -34,7 +34,17 @@ class ToF : public NodeCRTP<Node, ToF, ToFProperties> {
     Output amp_out{*this, "amplitude", Output::Type::MSender, {{DatatypeEnum::ImgFrame, true}}};
     Output err_out{*this, "error", Output::Type::MSender, {{DatatypeEnum::ImgFrame, true}}};
   Output pc_out{*this, "pointcloud", Output::Type::MSender, {{DatatypeEnum::Buffer, true}}};
-  Output rgb_pc_out{*this, "rgb_pointcloud", Output::Type::MSender, {{DatatypeEnum::Buffer, true}}};      
+  Output rgb_pc_out{*this, "rgb_pointcloud", Output::Type::MSender, {{DatatypeEnum::Buffer, true}}};
+
+  /**
+   * Sets filterconfig as hex string; convience method in particular for reading from env variables
+   */
+  void setFilterConfig(const std::string& filter_config);
+
+  /**
+   * Set filter values for mesh config
+   */ 
+  void setFilterConfig(const std::vector<uint8_t>& filter_config);
 };
 
 }  // namespace node
