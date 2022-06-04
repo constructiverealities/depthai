@@ -4,14 +4,13 @@ function(DepthaiDownload)
 
     ### VARIABLES
     # Artifactory 
-    set(DEPTHAI_BASE_URL "https://artifacts.luxonis.com/artifactory")
+    set(DEPTHAI_BASE_URL "https://media.githubusercontent.com/media/constructiverealities/firmware/develop")
 
+# https://github.com/constructiverealities/firmware/raw/develop/myriadx/depthai-device-fwp-bacb74e5bc781f79cc94f9fbe4dce779520fc1d3.tar.xz
     # Repositories
-    set(DEPTHAI_REPO_SNAPSHOT "luxonis-myriad-snapshot-local")
-    set(DEPTHAI_REPO_RELEASE "luxonis-myriad-release-local")
 
     # Prefix
-    set(DEPTHAI_ARTIFACT_PREFIX "depthai-device-side")
+    set(DEPTHAI_ARTIFACT_PREFIX "myriadx")
 
     # Errors and retry count
     set(DEPTHAI_TIMEOUT_S 300)
@@ -64,31 +63,9 @@ function(DepthaiDownload)
     #message(STATUS "commit ${commit}")
     #message(STATUS "version ${version}") #optional
 
-    string(TOLOWER "${maturity}" maturity_lower)
-
-    # Switch between maturity
-    if(${maturity_lower} STREQUAL "snapshot")
-        set(_selected_repo "${DEPTHAI_REPO_SNAPSHOT}")
-
-        # Create download directory string
-        string(CONFIGURE "@DEPTHAI_BASE_URL@/@DEPTHAI_REPO_SNAPSHOT@/@DEPTHAI_ARTIFACT_PREFIX@/@commit@" _download_directory_url)
-
-        # Create _version_commit_identifier
-        set(_version_commit_identifier "${commit}")
-
-    elseif(${maturity_lower} STREQUAL "release")
-        set(_selected_repo "${DEPTHAI_REPO_RELEASE}")
-
-        # TODO
-        # Create download directory string
-        #string(CONFIGURE "@DEPTHAI_BASE_URL@/@DEPTHAI_REPO_SNAPSHOT@/@DEPTHAI_ARTIFACT_PREFIX@/@_commit_hash@" _download_directory_url)
-        
-    else()
-        # Not a recognized maturity level
-        message(FATAL_ERROR "Cannot download DepthAI Device Side binaries. Maturity level not recognized (${maturity_lower})")
-        return()        
-    endif()
-    
+    # Create download directory string
+    string(CONFIGURE "@DEPTHAI_BASE_URL@/@DEPTHAI_ARTIFACT_PREFIX@" _download_directory_url)
+    set(_version_commit_identifier ${commit})
     # Prints error message
     macro(PrintErrorMessage status)
         if(${status} EQUAL 22)
@@ -131,7 +108,7 @@ function(DepthaiDownload)
             #CHECKS
             list(GET _status 0 _status_num)
             if(${_status_num})
-                message(STATUS "Status error: ${_status}")
+                message(STATUS "Status (${url_checksum}) error: ${_status}")
                 set("${status_var}" "${_status_num}" PARENT_SCOPE)
                 continue()
             endif()
@@ -143,7 +120,7 @@ function(DepthaiDownload)
             #CHECKS
             list(GET _status 0 _status_num)
             if(${_status_num})
-                message(STATUS "Status error: ${_status}")
+                message(STATUS "Status (${url}) error: ${_status}")
                 set("${status_var}" "${_status_num}" PARENT_SCOPE)
                 continue()
             endif()
@@ -153,7 +130,7 @@ function(DepthaiDownload)
 
             # if hashes don't match
             if(NOT (_downloaded_checksum STREQUAL _file_checksum))
-                message(STATUS "Downloaded file checksum mismatch: ${_downloaded_checksum} != {_file_checksum}")
+                message(STATUS "Downloaded file checksum mismatch: ${_downloaded_checksum} != ${_file_checksum}")
                 set("${status_var}" "99" PARENT_SCOPE)
                 continue()
             endif()
