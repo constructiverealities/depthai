@@ -6,7 +6,6 @@ function(DepthaiDownload)
     # Artifactory 
     set(DEPTHAI_BASE_URL "https://media.githubusercontent.com/media/constructiverealities/firmware/develop")
 
-# https://github.com/constructiverealities/firmware/raw/develop/myriadx/depthai-device-fwp-bacb74e5bc781f79cc94f9fbe4dce779520fc1d3.tar.xz
     # Repositories
 
     # Prefix
@@ -61,7 +60,7 @@ function(DepthaiDownload)
     #message(STATUS "folder ${folder}")
     #message(STATUS "maturity ${maturity}")
     message(STATUS "commit ${commit}")
-    #message(STATUS "version ${version}") #optional
+    message(STATUS "version ${version}") #optional
 
     # Create download directory string
     string(CONFIGURE "@DEPTHAI_BASE_URL@/@DEPTHAI_ARTIFACT_PREFIX@" _download_directory_url)
@@ -146,7 +145,7 @@ function(DepthaiDownload)
 
 
     # Check if depthai-shared matches
-    message(STATUS "commit: ${_depthai_shared_commit} ${_version_commit_identifier}")
+    message(STATUS "commit: shared: ${_depthai_shared_commit} id: ${_version_commit_identifier}")
     if(_depthai_shared_commit)
         DownloadAndChecksum(
             "${_download_directory_url}/depthai-shared-commit-hash-${_version_commit_identifier}.txt" # File
