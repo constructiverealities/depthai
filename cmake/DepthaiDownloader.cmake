@@ -35,17 +35,17 @@ function(DepthaiDownload)
 
         set(folder "${ARGV4}")
         set(output_list_var "${ARGV5}")
-        set(maturity "${ARGV6}")
-        set(commit "${ARGV7}")
-        set(version "${ARGV8}") #optional
+
+        set(commit "${ARGV6}")
+        set(version "${ARGV7}") #optional
 
     else()
         
         set(folder "${ARGV0}")
         set(output_list_var "${ARGV1}")
-        set(maturity "${ARGV2}")
-        set(commit "${ARGV3}")
-        set(version "${ARGV4}") #optional
+
+        set(commit "${ARGV2}")
+        set(version "${ARGV3}") #optional
 
     endif("${ARGV2}" STREQUAL "PATCH_ONLY")
 
@@ -60,7 +60,7 @@ function(DepthaiDownload)
     #DEBUG
     #message(STATUS "folder ${folder}")
     #message(STATUS "maturity ${maturity}")
-    #message(STATUS "commit ${commit}")
+    message(STATUS "commit ${commit}")
     #message(STATUS "version ${version}") #optional
 
     # Create download directory string
@@ -146,7 +146,7 @@ function(DepthaiDownload)
 
 
     # Check if depthai-shared matches
-    message(STATUS "commit: ${_depthai_shared_commit}")
+    message(STATUS "commit: ${_depthai_shared_commit} ${_version_commit_identifier}")
     if(_depthai_shared_commit)
         DownloadAndChecksum(
             "${_download_directory_url}/depthai-shared-commit-hash-${_version_commit_identifier}.txt" # File

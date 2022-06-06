@@ -319,7 +319,7 @@ else()
         PATCH_ONLY ${DEPTHAI_USB2_PATCH_ONLY_MODE}
         "${DEPTHAI_RESOURCES_OUTPUT_DIR}"            # Output folder
         DEPTHAI_RESOURCE_LIST                       # List of output resources
-        "${DEPTHAI_DEVICE_SIDE_MATURITY}"           # Maturity
+
         "${DEPTHAI_DEVICE_SIDE_COMMIT}"             # commit hash
         "${DEPTHAI_DEVICE_SIDE_VERSION}"            # Optional version
     )
