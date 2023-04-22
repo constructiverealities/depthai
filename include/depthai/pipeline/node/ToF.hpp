@@ -45,6 +45,12 @@ class ToF : public NodeCRTP<Node, ToF, ToFProperties> {
    * Set filter values for mesh config
    */ 
   void setFilterConfig(const std::vector<uint8_t>& filter_config);
+
+  /**
+   * Set calibration for time of flight camera
+   */ 
+  void setCalibration(const std::vector<uint8_t>& calibration);
+  
 };
 
 }  // namespace node

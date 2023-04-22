@@ -24,5 +24,8 @@ ToF::ToF(const std::shared_ptr<PipelineImpl>& par, int64_t nodeId, std::unique_p
     properties.filter_config = filter_config;
   }
 
+  void ToF::setCalibration(const std::vector<uint8_t>& calibration) {
+    properties.tof_calibration = calibration;
+  }
 }
 }
