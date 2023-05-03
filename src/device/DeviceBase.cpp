@@ -486,7 +486,8 @@ void DeviceBase::init2(Config cfg, const dai::Path& pathToMvcmd, tl::optional<co
     pimpl->setPattern(fmt::format("[{}] [{}] {}", deviceInfo.mxid, deviceInfo.name, LOG_DEFAULT_PATTERN));
 
     // Check if WD env var is set
-    std::chrono::milliseconds watchdogTimeout = device::XLINK_WATCHDOG_TIMEOUT;
+    std::chrono::milliseconds watchdogTimeout = std::chrono::milliseconds(5000);
+    config.board.watchdogTimeoutMs = static_cast<uint32_t>(watchdogTimeout.count());
     auto watchdogMsStr = utility::getEnv("DEPTHAI_WATCHDOG");
     if(!watchdogMsStr.empty()) {
         // Try parsing the string as a number
@@ -504,6 +505,7 @@ void DeviceBase::init2(Config cfg, const dai::Path& pathToMvcmd, tl::optional<co
         }
     }
 
+    config.board.watchdogInitialDelayMs = 20000;
     auto watchdogInitMsStr = utility::getEnv("DEPTHAI_WATCHDOG_INITIAL_DELAY");
     if(!watchdogInitMsStr.empty()) {
         // Try parsing the string as a number
